@@ -1,3 +1,4 @@
+# 二分法（一）之基础篇
 ## 0.关于二分
 二分查找，老经典的一个算法了，形象理解下：一个大西瓜，从中间剖两半，你手里拿了一半，再从中间剖两半，你手里还剩四分之一，再剖再剖。。。直到剩一口，你决定不能再剖了，于是一口吃掉了剩下的西瓜。
 
@@ -51,6 +52,81 @@ class Solution:
         return -1 
 ```
 
-## 3.二分法巩固
+TODO:
+1. 需要画几个图，建立二分查找的感性认识（如果target小，整个区间会往数组左边跑，反之，往右边跑）
+	- 感性认识1——区间在向target附近靠拢；
+	- 感性认识2——
+2. 需要考虑下大数越界，优化mid的计算
+3. 需要讨论两种写法，讲一下循环不变量
+4. 实数的二分法
+
+# 二分法（二）之强化篇
 [35. 搜索插入位置](https://leetcode.cn/problems/search-insert-position/)
+
 思路：
+拿到这个题很熟悉，跟基本的二分法很像了，只是多了一步，不在数组中的target要返回其应该被插入的位置（下标）。比如[1, 3, 5, 7]，target = 2，找不到，应该被插入1的后面，数组就变成[1, 2, 3, 5, 7]，2的下标就是1，所以就返回1。关于这个插入位置，隐隐猜测是要分情况讨论，回想下之前二分法的左右边界和中间值，就慢慢想清楚了在找不到target的情况下这里的插入位置总共有3种情况：a.target比所有值都小，要被放到数组最左边；b.target比所有值都大，要被放到数组最右边；c.target在左右边界中间，要放到比它小的值右边。然后就可以看下每种情况下要返回啥了：
+```
+case 1 target比所有值都小 ，二分法找啊找，最后一步是left等于right且都等于0，没得分了，但还是要进行最后一次循环判断，target小于最后一个元素，所以按照条件，right要减1，right就跑到left左边去了，下一次while循环条件就不满足退出循环了，target要放在nums[0]，即返回left or right+1
+case 2 target比所有值都大，二分法找到最后，left也等于right了，且都等于n-1(n是数组长度)了，根据条件，最后一次循环会让left加1，left就跑到right右边去了，而target要放在nums[n]，所以也是返回left or right+1
+case 3 target在中间，举个例子，最后数组切到只剩两个元素了[2, 4]，target是3，所以一定是右边界往左靠，最后left和right都相等且等于2所在的下标（假如是6），然后条件判断一定会将left加1（等于7），超过right（等于6），而target要被插入到2的后面，因此返回left or right + 1
+```
+好了，情况讨论完了，可以看到，最后的返回结果统一起来了，就很舒服。返回left or right+1就可以啦！
+代码：
+```python
+class Solution:
+    def searchInsert(self, nums: List[int], target: int) -> int:
+        left, right = 0, len(nums) - 1
+        while left <= right:
+            mid = (left + right) // 2
+            if nums[mid] > target:
+                right = mid - 1
+            elif nums[mid] < target:
+                left = mid + 1
+            else:
+                return mid 
+        return left 
+```
+
+---
+
+[34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/)
+
+思路：
+其实在学二分法的时候，我就在想，如果二分法关键的两个条件（1.数组升序排列；2.元素无重复）不满足怎么办？这个题马上就戳中了这个点，拿掉了【元素无重复】这个条件，让我们找找看target重复了多少次。
+
+代码：
+想法一：随便找到一个，然后往左右两边找
+```python
+class Solution:
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        left ,right = 0, len(nums) - 1
+        index = -1
+        res = [0, len(nums) - 1]
+        while left <= right:
+            mid = (left + right) // 2
+            if target > nums[mid]:
+                left = mid + 1
+            elif target < nums[mid]:
+                right = mid - 1
+            else:
+                index = mid
+                break 
+        if index == -1:
+            return [-1, -1]
+        for i in range(index, -1, -1):
+            if nums[i] != target:
+                res[0] = i + 1
+                break 
+        for i in range(index, len(nums), 1):
+            if nums[i] != target:
+                res[1] = i - 1
+                break 
+        return res
+```
+
+想法二：直接找左右边界
+
+
+
+
+# 二分法（三）之冲刺篇
