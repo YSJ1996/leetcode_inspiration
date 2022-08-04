@@ -1,6 +1,6 @@
 # 二分法（一）之基础篇
 ## 0.关于二分
-二分查找，老经典的一个算法了，形象理解下：一个大西瓜，从中间剖两半，你手里拿了一半，再从中间剖两半，你手里还剩四分之一，再剖再剖。。。直到剩一口，你决定不能再剖了，于是一口吃掉了剩下的西瓜。
+一个大西瓜，从中间剖两半，你手里拿了一半，再从中间剖两半，你手里还剩四分之一，再剖再剖。。。直到剩一口，你决定不能再剖了，于是一口吃掉了剩下的西瓜。没错，这就是鼎鼎大名的二分查找算法了！
 
 ## 1.二分法联想
 二分法联想：有序～无重复～对数～O(logn)复杂度～优化O(n)～
@@ -125,8 +125,128 @@ class Solution:
 ```
 
 想法二：直接找左右边界
+```python
+class Solution:
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        if not nums:
+            return [-1, -1]
+        res = [-1, -1]
+        left, right = 0, len(nums) - 1
+        while left <= right:
+            mid = (left + right) // 2
+            if nums[mid] >= target:
+                right = mid - 1
+            elif nums[mid] < target:
+                left = mid + 1
+        if left >= 0 and left <= len(nums) - 1 and nums[left] == target:
+            res[0] = left
 
+        left, right = 0, len(nums) - 1
+        while left <= right:
+            mid = (left + right) // 2
+            if nums[mid] > target:
+                right = mid - 1
+            elif nums[mid] <= target:
+                left = mid + 1
+        if right >= 0 and right <= len(nums) - 1 and nums[right] == target:
+            res[1] = right
+        return res
+```
 
+---
+
+ [69. x 的平方根](https://leetcode.cn/problems/sqrtx/)
+
+题目规定了结果保留整数部分，从实例中思考，应该每次二分去找这个数是最快的，于是剩下的就是考虑二分的边界和判断条件细节；边界的话，考虑0 or 1这两个例子的话，还是从[0, x]左闭右闭比较方便，不用额外讨论corner case了，然后需要注意在二分的时候，有可能永远错过结果，比如结果应该是2，结果左边界超过了2来到3，那么永远也不会返回2了，结合题目给的条件，返回的结果永远小于等于x的真正平方根，所以当mid的平方小于x时，需要一个临时变量记录此时的mid，防止越过mid之后再也找不到了。
+```python
+class Solution:
+    def mySqrt(self, x: int) -> int:
+        left, right = 0, x
+        res = 0
+        while left <= right:
+            mid = (left + right) // 2
+            if mid ** 2 > x:
+                right = mid - 1
+            elif mid ** 2 < x:
+                left = mid + 1
+                res = mid 
+            else:
+                return mid 
+        return res 
+```
+
+---
+
+[367. 有效的完全平方数](https://leetcode.cn/problems/valid-perfect-square/)
+
+这一题就是上一题的基础上，判断一下是否能找到一个数，其平方等于num，对应二分法的话，就是mid ** 2 = num的条件，此时返回True，其他情况都意味着没找到，都要返回False
+```python
+class Solution:
+    def isPerfectSquare(self, num: int) -> bool:
+        left, right = 0, num 
+        while left <= right:
+            mid = (left + right) // 2
+            if mid ** 2 > num:
+                right = mid - 1
+            elif mid ** 2 < num:
+                left = mid + 1
+            else:
+                return True
+        return False
+```
+
+---
+[374. 猜数字大小](https://leetcode.cn/problems/guess-number-higher-or-lower/)
+最多猜$\lceil log_{2}n \rceil$次
+
+```python
+# The guess API is already defined for you.
+# @param num, your guess
+# @return -1 if my number is lower, 1 if my number is higher, otherwise return 0
+# def guess(num: int) -> int:
+
+class Solution:
+    def guessNumber(self, n: int) -> int:
+        left, right = 1, n 
+        while left <= right:
+            mid = (left + right) // 2
+            if guess(mid) == -1:
+                right = mid - 1
+            elif guess(mid) == 1:
+                left = mid + 1
+            else:
+                return mid 
+```
 
 
 # 二分法（三）之冲刺篇
+基础二分：有序、无重复、线性存储
+二分思想：每次能排除一半可能
+```python
+while condition is True:
+	if A:
+		range -> half range
+	else:
+		range -> another half range
+```
+
+题目list：
+
+[162. 寻找峰值](https://leetcode.cn/problems/find-peak-element/)
+
+
+
+
+[1901. 寻找峰值 II](https://leetcode.cn/problems/find-a-peak-element-ii/)
+[剑指 Offer 11. 旋转数组的最小数字](https://leetcode.cn/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/)
+[剑指 Offer 04. 二维数组中的查找](https://leetcode.cn/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
+[最接近的二叉搜索树值](https://leetcode.cn/problems/closest-binary-search-tree-value)
+[222. 完全二叉树的节点个数](https://leetcode.cn/problems/count-complete-tree-nodes/)
+
+
+
+
+
+
+组合题：
+[375. 猜数字大小 II](https://leetcode.cn/problems/guess-number-higher-or-lower-ii/)
