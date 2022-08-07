@@ -1,12 +1,12 @@
 # 二分法（一）之基础篇
 ## 0.关于二分
-一个大西瓜，从中间剖两半，你手里拿了一半，再从中间剖两半，你手里还剩四分之一，再剖再剖。。。直到剩一口，你决定不能再剖了，于是一口吃掉了剩下的西瓜。没错，这就是鼎鼎大名的二分查找算法了！
+一个大西瓜，从中间剖两半，丢一半留一半，再从中间剖两半，丢一半留一半，留下的还剩四分之一，再剖再丢。。。直到只剩一口，你决定不能再剖了，于是一口吃掉了剩下的西瓜。没错，这就是鼎鼎大名的二分查找算法了！
 
 ## 1.二分法联想
 二分法联想：有序～无重复～对数～O(logn)复杂度～优化O(n)～
 
 ## 2.二分法基本理解
-从最经典的二分查找开始吧～
+朋友们，磨刀不误砍柴工，让我们从最经典的二分查找开始吧～
 
 题目链接：[704. 二分查找](https://leetcode.cn/problems/binary-search/)，大概意思是给你一个n个元素的升序数组，跟你保证元素不重复，再随便给你一个值，让你看一下数组里有没有这个值，有的话返回下标，没有的话默认返回-1
 
@@ -233,11 +233,51 @@ while condition is True:
 题目list：
 
 [162. 寻找峰值](https://leetcode.cn/problems/find-peak-element/)
-
-
+这道题想了好久呀，可以画个类似山峰的图，每次切掉一半，和正经的二分结束条件有点不一样，这里绝对不能用等于条件了，不然会陷入死循环
+```python
+class Solution:
+    def findPeakElement(self, nums: List[int]) -> int:
+        left, right = 0, len(nums) - 1
+        index = 0
+        while left < right:
+            mid = (left + right) // 2
+            if nums[mid] > nums[mid + 1]:
+                right = mid
+            else:
+                left = mid + 1
+        return left 
+```
 
 
 [1901. 寻找峰值 II](https://leetcode.cn/problems/find-a-peak-element-ii/)
+```python
+class Solution:
+    def findPeakGrid(self, mat: List[List[int]]) -> List[int]:
+        m, n = len(mat), len(mat[0])
+        value, index = 0, [0, 0]
+        for i in range(m):
+            left, right = 0, n - 1
+            while left < right:
+                mid = (left + right) // 2
+                if mat[i][mid] > mat[i][mid + 1]:
+                    right = mid 
+                else:
+                    left = mid + 1
+            tmp = mat[i][left]
+            if tmp >= value:
+                value = tmp
+                index = [i, left]                    
+            else:
+                pass 
+        if index[0] - 1 >= 0:
+            return index if value > mat[index[0] - 1][index[1]] else [index[0] - 1, index[1]]
+        if index[0] + 1 <= m:
+            return index if value > mat[index[0] + 1][index[1]] else [index[0] + 1, index[1]]
+        return index 
+```
+
+
+
 [剑指 Offer 11. 旋转数组的最小数字](https://leetcode.cn/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/)
 [剑指 Offer 04. 二维数组中的查找](https://leetcode.cn/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
 [最接近的二叉搜索树值](https://leetcode.cn/problems/closest-binary-search-tree-value)
